@@ -17,7 +17,7 @@ const FormPanelLogin = ({
     <form
       onSubmit={onSubmitHandler}
       noValidate
-      className="w-full max-w-md bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 border border-white/50 space-y-6"
+      className="w-full max-w-md bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 border border-white/50 space-y-6 opacity-0 animate-fade-in-delay-4"
     >
       <div className="flex justify-center mb-6">
         <img

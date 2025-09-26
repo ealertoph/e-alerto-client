@@ -68,7 +68,7 @@ const Login = () => {
 
   return (
     <div
-      className="relative min-h-screen flex flex-col md:flex-row font-sans overflow-hidden"
+      className="relative min-h-screen flex flex-col md:flex-row font-sans overflow-hidden animate-fade-in"
       style={{
         background: `url(${assets.login_bg}) no-repeat center center`,
         backgroundSize: "cover",
@@ -83,13 +83,13 @@ const Login = () => {
           <img
             src={assets.logo_white}
             alt="E-Alerto Logo"
-            className="w-44 mb-8 mx-auto md:mx-0 cursor-pointer transition-transform duration-300 hover:scale-105"
+            className="w-44 mb-8 mx-auto md:mx-0 cursor-pointer transition-transform duration-300 hover:scale-105 opacity-0 animate-fade-in"
             onClick={() => navigate("/")}
           />
-          <h1 className="text-5xl font-bold mb-4 leading-tight tracking-tight drop-shadow-lg">
+          <h1 className="text-5xl font-bold mb-4 leading-tight tracking-tight drop-shadow-lg opacity-0 animate-fade-in">
             Welcome Back
           </h1>
-          <p className="opacity-90 text-base leading-relaxed">
+          <p className="opacity-90 text-base leading-relaxed animate-fade-in">
             Sign in to your employee account and contribute to smarter road
             management in Quezon City.
           </p>

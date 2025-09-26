@@ -230,7 +230,7 @@ export default function EmployeeDialog({
             />
           )}
           <TextField
-            label="Surname"
+            label="Surname*"
             value={form.surname}
             onChange={handleChange("surname")}
             error={!!errors.surname}
@@ -238,7 +238,7 @@ export default function EmployeeDialog({
             fullWidth
           />
           <TextField
-            label="First Name"
+            label="First Name*"
             value={form.firstName}
             onChange={handleChange("firstName")}
             error={!!errors.firstName}
@@ -263,7 +263,7 @@ export default function EmployeeDialog({
           />
           <TextField
             select
-            label="District"
+            label="District*"
             value={form.district}
             onChange={handleChange("district")}
             error={!!errors.district}
@@ -278,7 +278,7 @@ export default function EmployeeDialog({
           </TextField>
           <TextField
             select
-            label="Position"
+            label="Position*"
             value={form.position}
             onChange={handleChange("position")}
             error={!!errors.position}
@@ -292,7 +292,7 @@ export default function EmployeeDialog({
             ))}
           </TextField>
           <TextField
-            label="Email"
+            label="Email*"
             value={form.email}
             onChange={handleChange("email")}
             error={!!errors.email}
@@ -300,7 +300,7 @@ export default function EmployeeDialog({
             fullWidth
           />
           <TextField
-            label="Phone"
+            label="Phone*"
             value={form.phone.replace(/^\+63/, "")}
             onChange={(e) => {
               const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
