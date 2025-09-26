@@ -5,6 +5,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
 import axios from "axios";
+import { Eye, EyeOff } from "lucide-react"; // add this at the top
 
 const FormPanelResetPassword = ({
   backendUrl,
@@ -28,17 +29,19 @@ const FormPanelResetPassword = ({
   setIsOtpSubmitted,
 }) => {
   const navigate = useNavigate();
-  const [otpTimer, setOtpTimer] = useState(15 * 60);
+  const [otpTimer, setOtpTimer] = useState(3 * 60);
   const [otpError, setOtpError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
   const inputRefs = useRef([]);
   const [resetOtpTimerTrigger, setResetOtpTimerTrigger] = useState(0);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // OTP Countdown
   useEffect(() => {
     if (!isEmailSent || isOtpSubmitted) return;
 
-    setOtpTimer(15 * 60); // reset timer whenever resend
+    setOtpTimer(3 * 60); // reset timer whenever resend
     const interval = setInterval(() => {
       setOtpTimer((prev) => {
         if (prev <= 1) {
@@ -79,7 +82,7 @@ const FormPanelResetPassword = ({
       );
       if (data.success) {
         toast.success("A new OTP has been sent to your email.");
-        setOtpTimer(15 * 60);
+        setOtpTimer(3 * 60);
         setResendCooldown(30); // 30 seconds cooldown
         inputRefs.current.forEach((input) => (input.value = ""));
         setOtpError("");
@@ -135,7 +138,7 @@ const FormPanelResetPassword = ({
       );
       if (data.success) {
         toast.success(data.message);
-        setOtpTimer(15 * 60);
+        setOtpTimer(3 * 60);
         setResendCooldown(30); // 30 seconds cooldown before resend
         setOtpError("");
         setIsEmailSent(true);
@@ -313,55 +316,78 @@ const FormPanelResetPassword = ({
               <li>1 special character</li>
             </ul>
           </div>
+
+          {/* New Password Field */}
           <div>
-            <input
-              type="password"
-              placeholder="New password"
-              className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${
-                errors.newPassword ? "border-red-400" : "border-white/20"
-              } text-white placeholder-gray-200 focus:outline-none focus:ring-2 ${
-                errors.newPassword
-                  ? "focus:ring-red-400"
-                  : "focus:ring-indigo-400"
-              } transition-all duration-300 hover:bg-white/10`}
-              value={newPassword}
-              onChange={(e) => {
-                setNewPassword(e.target.value);
-                if (submitted)
-                  setErrors((prev) => ({ ...prev, newPassword: undefined }));
-              }}
-            />
+            <div className="relative">
+              <input
+                type={showNewPassword ? "text" : "password"}
+                placeholder="New password"
+                className={`w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border ${
+                  errors.newPassword ? "border-red-400" : "border-white/20"
+                } text-white placeholder-gray-200 focus:outline-none focus:ring-2 ${
+                  errors.newPassword
+                    ? "focus:ring-red-400"
+                    : "focus:ring-indigo-400"
+                } transition-all duration-300 hover:bg-white/10`}
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  if (submitted)
+                    setErrors((prev) => ({ ...prev, newPassword: undefined }));
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword(!showNewPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-white select-none focus:outline-none"
+              >
+                {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
             {submitted && errors.newPassword && (
               <p className="mt-2 text-sm text-red-300">{errors.newPassword}</p>
             )}
           </div>
+
+          {/* Confirm Password Field */}
           <div>
-            <input
-              type="password"
-              placeholder="Confirm new password"
-              className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${
-                errors.confirmPassword ? "border-red-400" : "border-white/20"
-              } text-white placeholder-gray-200 focus:outline-none focus:ring-2 ${
-                errors.confirmPassword
-                  ? "focus:ring-red-400"
-                  : "focus:ring-indigo-400"
-              } transition-all duration-300 hover:bg-white/10`}
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                if (submitted)
-                  setErrors((prev) => ({
-                    ...prev,
-                    confirmPassword: undefined,
-                  }));
-              }}
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm new password"
+                className={`w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border ${
+                  errors.confirmPassword ? "border-red-400" : "border-white/20"
+                } text-white placeholder-gray-200 focus:outline-none focus:ring-2 ${
+                  errors.confirmPassword
+                    ? "focus:ring-red-400"
+                    : "focus:ring-indigo-400"
+                } transition-all duration-300 hover:bg-white/10`}
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (submitted)
+                    setErrors((prev) => ({
+                      ...prev,
+                      confirmPassword: undefined,
+                    }));
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-3 flex items-center text-white select-none focus:outline-none"
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
             {submitted && errors.confirmPassword && (
               <p className="mt-2 text-sm text-red-300">
                 {errors.confirmPassword}
               </p>
             )}
           </div>
+
           <button
             type="submit"
             className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg transition-all duration-300"
