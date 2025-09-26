@@ -69,24 +69,8 @@ export const HeroSection = () => {
           </div>
         </div>
 
-        {/* RIGHT: Phone with Ripple Circles */}
+        {/* RIGHT: Phone*/}
         <div className="relative flex justify-center md:justify-end opacity-0 animate-fade-in-delay-4 order-first md:order-last z-0">
-          <div className="absolute inset-0 flex items-center justify-center -z-10">
-            {/* Ripple Circles adapt to theme */}
-            <div
-              className="w-72 h-72 rounded-full border-4 backdrop-blur-sm"
-              style={{
-                borderColor: "hsl(var(--foreground)/0.2)",
-              }}
-            />
-            <div
-              className="absolute w-[28rem] h-[28rem] rounded-full border-4 backdrop-blur-sm"
-              style={{
-                borderColor: "hsl(var(--foreground)/0.15)",
-              }}
-            />
-          </div>
-
           <img
             src={assets.hero_phone}
             alt="E-Alerto Mobile App"
