@@ -1,7 +1,8 @@
 // src/components/FormPanelLogin.jsx
-import React from "react";
+import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
-import { assets } from "../assets/assets"; 
+import { assets } from "../assets/assets";
+import { Eye, EyeOff } from "lucide-react"; // eye icons
 
 const FormPanelLogin = ({
   form,
@@ -13,6 +14,8 @@ const FormPanelLogin = ({
   captchaValue,
   setCaptchaValue,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <form
       onSubmit={onSubmitHandler}
@@ -60,20 +63,31 @@ const FormPanelLogin = ({
         <label className="block text-sm font-medium text-white mb-2">
           Password
         </label>
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="Enter your password"
-          className={`w-full px-4 py-3 rounded-lg bg-white/5 border ${
-            submitted && errors.password ? "border-red-400" : "border-white/20"
-          } text-white placeholder-gray-200 focus:outline-none focus:ring-2 ${
-            submitted && errors.password
-              ? "focus:ring-red-400"
-              : "focus:ring-indigo-400"
-          } transition-all duration-300 hover:bg-white/10`}
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="Enter your password"
+            className={`w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border ${
+              submitted && errors.password
+                ? "border-red-400"
+                : "border-white/20"
+            } text-white placeholder-gray-200 focus:outline-none focus:ring-2 ${
+              submitted && errors.password
+                ? "focus:ring-red-400"
+                : "focus:ring-indigo-400"
+            } transition-all duration-300 hover:bg-white/10`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-3 flex items-center text-white select-none focus:outline-none"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
         {submitted && errors.password && (
           <p className="mt-2 text-sm text-red-300">{errors.password}</p>
         )}
