@@ -8,7 +8,7 @@ import hand_wave from "./hand_wave.png";
 import header_img from "./header_img.png";
 import header_img1 from "./header_img1.png";
 import header_img2 from "./header_img2.png";
-import hero_phone from "./hero-phone.svg";
+import hero_phone from "./hero-phone.webp";
 import pothole from "./pothole.jpg";
 import cracks from "./cracks.jpg";
 import qcde_logo from "./qcde-logo.svg";
