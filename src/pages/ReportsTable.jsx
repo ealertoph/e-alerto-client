@@ -42,7 +42,10 @@ export default function ReportsTable() {
   const [rows, setRows] = useState([]);
   const [counts, setCounts] = useState({});
   const [loading, setLoading] = useState(true);
-  const [pageSize, setPageSize] = useState(10);
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
   const [tab, setTab] = useState("active"); // "active" or "archive"
 
   const { userData } = useContext(AppContent); // Access user data from the context
@@ -219,8 +222,8 @@ export default function ReportsTable() {
               <DataGrid
                 rows={filtered}
                 columns={columns}
-                pageSize={pageSize}
-                onPageSizeChange={(newSize) => setPageSize(newSize)}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
                 pageSizeOptions={[10, 25, 50, 100]}
                 pagination
                 autoHeight

@@ -29,7 +29,10 @@ export default function FeedbackTable() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [pageSize, setPageSize] = useState(10);
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
 
   // detail dialog state
   const [detailOpen, setDetailOpen] = useState(false);
@@ -140,9 +143,10 @@ export default function FeedbackTable() {
                 autoHeight
                 rows={filtered}
                 columns={columns}
-                pageSize={pageSize}
-                onPageSizeChange={(newSize) => setPageSize(newSize)}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
                 pageSizeOptions={[10, 25, 50, 100]}
+                pagination
                 onRowClick={handleRowClick}
                 sx={{
                   border: 0,

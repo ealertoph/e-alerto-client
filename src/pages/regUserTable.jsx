@@ -19,7 +19,10 @@ function RegUserTable() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
-  const [pageSize, setPageSize] = React.useState(10);
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -112,8 +115,8 @@ function RegUserTable() {
             rows={filteredRows}
             columns={columns}
             loading={loading}
-            pageSize={pageSize}
-            onPageSizeChange={(newSize) => setPageSize(newSize)}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
             pageSizeOptions={[10, 25, 50, 100]}
             pagination
             autoHeight

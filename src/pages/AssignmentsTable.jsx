@@ -27,7 +27,10 @@ export default function AssignmentsTable() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [pageSize, setPageSize] = useState(10);
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
   const { userData } = useContext(AppContent);
   const currentUserId = userData?.id || userData?._id;
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -434,8 +437,8 @@ export default function AssignmentsTable() {
                 autoHeight
                 rows={filteredRows}
                 columns={columns}
-                pageSize={pageSize}
-                onPageSizeChange={(newSize) => setPageSize(newSize)}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
                 pageSizeOptions={[10, 25, 50, 100]}
                 pagination
                 onCellClick={(params) => {
