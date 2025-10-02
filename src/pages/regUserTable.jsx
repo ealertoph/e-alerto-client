@@ -1,5 +1,5 @@
 // src/pages/RegUserTable.jsx
-import * as React from "react";
+import React, { useState } from "react";
 import {
   Box,
   TextField,
