@@ -78,6 +78,7 @@ export const HeroSection = () => {
             height={1080} // actual pixel height
             fetchpriority="high"
             decoding="async"
+            loading="eager"
             className="w-80 md:w-[42rem] drop-shadow-xl relative z-10"
           />
         </div>
