@@ -2,19 +2,32 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Preload critical LCP image FIRST -->
+  <!-- ✅ Preload actual LCP background FIRST -->
+  <link
+    rel="preload"
+    href="/assets/login-bg-CMhps4Ls.webp"
+    as="image"
+    fetchpriority="high"
+  />
+  <!-- Optionally preload hero phone (secondary visual) -->
   <link
     rel="preload"
     href="/assets/hero-phone-DGYFpCC8.webp"
     as="image"
-    fetchpriority="high"
   />
-
   <!-- Preload critical CSS/JS -->
-  <link rel="preload" href="/assets/index-DOgoDFVi.css" as="style" crossorigin="anonymous" />
-  <link rel="preload" href="/assets/index-BvqJutxz.js" as="script" crossorigin="anonymous" />
-  <link rel="preload" href="/assets/login-bg.jpg" as="image" />
+  <link
+    rel="preload"
+    href="/assets/index-DOgoDFVi.css"
+    as="style"
+    crossorigin="anonymous"
+  />
+  <link
+    rel="preload"
+    href="/assets/index-BvqJutxz.js"
+    as="script"
+    crossorigin="anonymous"
+  />
 
   <!-- API domain -->
   <link rel="preconnect" href="https://api.ealerto-qcde.com" crossorigin />
@@ -23,74 +36,74 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <!-- Primary Meta Tags -->
-    <title>
-      E-Alerto | Road Damage Reporting & Project Tracking for Quezon City
-    </title>
-    <meta
-      name="title"
-      content="E-Alerto | Road Damage Reporting & Project Tracking for Quezon City"
-    />
-    <meta
-      name="description"
-      content="E-Alerto is a road damage reporting and project tracking platform for the Quezon City Department of Engineering to empowering QCitizens build safer roads."
-    />
-    <meta
-      name="keywords"
-      content="E-Alerto, Quezon City, road damage reporting, project tracking, QCDE, road safety, engineering platform, public service, transparency, accountability"
-    />
-    <meta name="author" content="Quezon City Department of Engineering" />
+  <!-- Primary Meta Tags -->
+  <title>
+    E-Alerto | Road Damage Reporting & Project Tracking for Quezon City
+  </title>
+  <meta
+    name="title"
+    content="E-Alerto | Road Damage Reporting & Project Tracking for Quezon City"
+  />
+  <meta
+    name="description"
+    content="E-Alerto is a road damage reporting and project tracking platform for the Quezon City Department of Engineering to empowering QCitizens build safer roads."
+  />
+  <meta
+    name="keywords"
+    content="E-Alerto, Quezon City, road damage reporting, project tracking, QCDE, road safety, engineering platform, public service, transparency, accountability"
+  />
+  <meta name="author" content="Quezon City Department of Engineering" />
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.ealerto-qcde.com/" />
-    <meta
-      property="og:title"
-      content="E-Alerto | Road Damage Reporting & Project Tracking for Quezon City"
-    />
-    <meta
-      property="og:description"
-      content="Empowering QCitizens. Engineering Safer Roads. Report road damage and track engineering projects in Quezon City with E-Alerto."
-    />
-    <meta
-      property="og:image"
-      content="https://www.ealerto-qcde.com/og-image.png"
-    />
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.ealerto-qcde.com/" />
+  <meta
+    property="og:title"
+    content="E-Alerto | Road Damage Reporting & Project Tracking for Quezon City"
+  />
+  <meta
+    property="og:description"
+    content="Empowering QCitizens. Engineering Safer Roads. Report road damage and track engineering projects in Quezon City with E-Alerto."
+  />
+  <meta
+    property="og:image"
+    content="https://www.ealerto-qcde.com/og-image.png"
+  />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://www.ealerto-qcde.com/" />
-    <meta
-      property="twitter:title"
-      content="E-Alerto | Road Damage Reporting & Project Tracking for Quezon City"
-    />
-    <meta
-      property="twitter:description"
-      content="Empowering QCitizens. Engineering Safer Roads. Report road damage and track engineering projects in Quezon City with E-Alerto."
-    />
-    <meta
-      property="twitter:image"
-      content="https://www.ealerto-qcde.com/og-image.png"
-    />
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://www.ealerto-qcde.com/" />
+  <meta
+    property="twitter:title"
+    content="E-Alerto | Road Damage Reporting & Project Tracking for Quezon City"
+  />
+  <meta
+    property="twitter:description"
+    content="Empowering QCitizens. Engineering Safer Roads. Report road damage and track engineering projects in Quezon City with E-Alerto."
+  />
+  <meta
+    property="twitter:image"
+    content="https://www.ealerto-qcde.com/og-image.png"
+  />
 
-    <!-- JSON-LD Structured Data -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "E-Alerto",
-        "url": "https://www.ealerto-qcde.com/",
-        "logo": "https://www.ealerto-qcde.com/logo.svg",
-        "sameAs": [
-          "https://quezoncity.gov.ph/",
-          "https://www.facebook.com/QuezonCityDepartmentofEngineering"
-        ],
-        "description": "E-Alerto is a road damage reporting and project tracking platform developed for the Quezon City Department of Engineering."
-      }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "E-Alerto",
+      "url": "https://www.ealerto-qcde.com/",
+      "logo": "https://www.ealerto-qcde.com/logo.svg",
+      "sameAs": [
+        "https://quezoncity.gov.ph/",
+        "https://www.facebook.com/QuezonCityDepartmentofEngineering"
+      ],
+      "description": "E-Alerto is a road damage reporting and project tracking platform developed for the Quezon City Department of Engineering."
+    }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
