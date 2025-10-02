@@ -36,7 +36,11 @@ export default function EmployeesTable() {
   const [rows, setRows] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [search, setSearch] = React.useState("");
-  const [pageSize, setPageSize] = React.useState(10);
+  // replace your separate `pageSize` state with this
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
   const [detailOpen, setDetailOpen] = React.useState(false);
   const [detailRow, setDetailRow] = React.useState(null);
 
@@ -205,9 +209,9 @@ export default function EmployeesTable() {
                 autoHeight
                 rows={filtered}
                 columns={columns}
-                paginationModel={{ pageSize, page: 0 }}
-  onPaginationModelChange={(model) => setPageSize(model.pageSize)}
-  pageSizeOptions={[10, 25, 50, 100]}
+                paginationModel={paginationModel}
+                onPaginationModelChange={setPaginationModel}
+                pageSizeOptions={[10, 25, 50, 100]}
                 pagination
                 onCellClick={(params) => {
                   if (params.field === "status" || params.field === "actions")
