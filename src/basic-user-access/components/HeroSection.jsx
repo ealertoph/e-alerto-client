@@ -74,6 +74,8 @@ export const HeroSection = () => {
           <img
             src={assets.hero_phone}
             alt="E-Alerto Mobile App"
+            width={1080} // actual pixel width of your SVG/PNG
+            height={1080} // actual pixel height
             className="w-80 md:w-[42rem] drop-shadow-xl relative z-10"
           />
         </div>
