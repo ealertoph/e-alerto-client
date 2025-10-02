@@ -251,6 +251,27 @@ export default function DupaBreakdown({
           <Typography variant="h6" fontWeight={700}>
             Grand Total: ₱{grandTotal.toLocaleString()}
           </Typography>
+          {/* after Grand Total row */}
+          <div className="mt-4">
+            <ExportCsvDupa
+              reportId={reportId}
+              classification={classification}
+              measurement={area.toFixed(2)}
+              breakdown={{
+                estTime,
+                labourRows,
+                equipmentRows,
+                materialRows,
+                labourTotal,
+                equipmentTotal,
+                materialTotal,
+                vat,
+                grandTotal,
+                minorToolsCost,
+              }}
+              filename={`${reportId}_dupa.csv`}
+            />
+          </div>
         </CardContent>
       </Card>
     </Box>
