@@ -9,14 +9,20 @@ export const HeroSection = () => {
     <section
       id="hero"
       className="relative min-h-screen flex items-center justify-center px-6 py-12 pt-24 md:pt-18 text-foreground transition-colors duration-300 animate-fade-in"
-      style={{
-        background: `url(${assets.login_bg}) no-repeat center center`,
-        backgroundSize: "cover",
-      }}
     >
+      {/* LCP Hero Image */}
+      <img
+        src={assets.login_bg}
+        alt="Hero background"
+        fetchpriority="high"
+        decoding="async"
+        loading="eager"
+        className="absolute inset-0 w-full h-full object-cover -z-10"
+      />
+
       {/* Gradient Overlay */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 -z-0"
         style={{
           background: `linear-gradient(
             to right,
@@ -74,8 +80,8 @@ export const HeroSection = () => {
           <img
             src={assets.hero_phone}
             alt="E-Alerto Mobile App"
-            width={1080} // actual pixel width of your SVG/PNG
-            height={1080} // actual pixel height
+            width={1080}
+            height={1080}
             fetchpriority="high"
             decoding="async"
             loading="eager"
