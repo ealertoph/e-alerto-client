@@ -205,9 +205,9 @@ export default function EmployeesTable() {
                 autoHeight
                 rows={filtered}
                 columns={columns}
-                pageSize={pageSize}
-                onPageSizeChange={(newSize) => setPageSize(newSize)}
-                pageSizeOptions={[10, 25, 50, 100]}
+                paginationModel={{ pageSize, page: 0 }}
+  onPaginationModelChange={(model) => setPageSize(model.pageSize)}
+  pageSizeOptions={[10, 25, 50, 100]}
                 pagination
                 onCellClick={(params) => {
                   if (params.field === "status" || params.field === "actions")
