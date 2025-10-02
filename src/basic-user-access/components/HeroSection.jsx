@@ -76,6 +76,8 @@ export const HeroSection = () => {
             alt="E-Alerto Mobile App"
             width={1080} // actual pixel width of your SVG/PNG
             height={1080} // actual pixel height
+            fetchpriority="high"
+            decoding="async"
             className="w-80 md:w-[42rem] drop-shadow-xl relative z-10"
           />
         </div>

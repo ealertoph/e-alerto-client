@@ -9,15 +9,14 @@ export const AppContextProvider = (props) => {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null); // ✅ Corrected: Initial state is null, not false
-  const [isLoading, setIsLoading] = useState(true); // ✅ This is correct
+  const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getAuthState = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/auth/is-auth");
       if (data.success) {
         setIsLoggedIn(true);
-        // ⭐ Fetch user data immediately after successful authentication
         await getUserData();
       } else {
         setIsLoggedIn(false);
@@ -28,7 +27,7 @@ export const AppContextProvider = (props) => {
       setIsLoggedIn(false);
       setUserData(null);
     } finally {
-      setIsLoading(false); // ✅ Final loading state update after all checks are done
+      setIsLoading(false);
     }
   };
 
@@ -36,9 +35,6 @@ export const AppContextProvider = (props) => {
     try {
       const { data } = await axios.get(backendUrl + "/api/user/data");
       if (data.success) {
-        // ⭐ IMPORTANT: Ensure your backend's /api/user/data route returns an object
-        // with the _id and other user details.
-        // Example response: { success: true, userData: { _id: '...', username: '...' } }
         setUserData(data.userData);
       } else {
         toast.error(data.message);
@@ -51,7 +47,15 @@ export const AppContextProvider = (props) => {
   };
 
   useEffect(() => {
-    getAuthState();
+    // ✅ Run after initial paint to avoid blocking LCP
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => {
+        getAuthState();
+      });
+    } else {
+      // fallback for browsers that don't support requestIdleCallback
+      setTimeout(() => getAuthState(), 0);
+    }
   }, []);
 
   const value = {
