@@ -16,6 +16,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Ensure Toastify styles are included
+// at the top of DupaBreakdown.jsx with the other imports
+import ExportCsvDupa from "./ExportCsvDupa";
 
 // Constants
 const OUTPUT_PER_HOUR = 70; // m²/h
