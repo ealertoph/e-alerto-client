@@ -5,9 +5,9 @@ import hero_phone from "./hero-phone.webp";
 import pothole from "./pothole.webp";
 import cracks from "./cracks.webp";
 import qcde_logo from "./qcde-logo.webp";
-import qc_monument from "./qc-monument.png";
-import digibridge_solutions from "./digibridge_solutions.png";
-import login_bg from "./login-bg.jpg";
+import qc_monument from "./qc-monument.webp";
+import digibridge_solutions from "./digibridge_solutions.webp";
+import login_bg from "./login-bg.webp";
 
 export const assets = {
   arrow_icon,
