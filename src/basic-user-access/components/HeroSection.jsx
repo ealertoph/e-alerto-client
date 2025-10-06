@@ -47,7 +47,7 @@ export const HeroSection = () => {
           </p>
 
           <div className="pt-4 flex items-center justify-center md:justify-start gap-2 opacity-0 animate-fade-in-delay-3 relative pb-20 md:pb-0">
-            <a href="#" className="cosmic-button">
+            <a href="/EAlerto-v1.0.apk" className="cosmic-button">
               Download Now
             </a>
 

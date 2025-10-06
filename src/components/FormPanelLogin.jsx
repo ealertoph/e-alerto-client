@@ -1,8 +1,7 @@
-// src/components/FormPanelLogin.jsx
 import React, { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { assets } from "../assets/assets";
-import { Eye, EyeOff } from "lucide-react"; // eye icons
+import { Eye, EyeOff, Loader2 } from "lucide-react"; // 👈 added Loader2 spinner icon
 
 const FormPanelLogin = ({
   form,
@@ -15,10 +14,22 @@ const FormPanelLogin = ({
   setCaptchaValue,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // 👈 NEW loading state
+
+  // Wrapper around onSubmitHandler to show spinner
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await onSubmitHandler(e); // run the original submit logic
+    } finally {
+      setLoading(false); // hide spinner no matter success/fail
+    }
+  };
 
   return (
     <form
-      onSubmit={onSubmitHandler}
+      onSubmit={handleSubmit}
       noValidate
       className="w-full max-w-md bg-white/10 backdrop-blur-lg shadow-2xl rounded-2xl p-8 border border-white/50 space-y-6 opacity-0 animate-fade-in-delay-4"
     >
@@ -117,9 +128,18 @@ const FormPanelLogin = ({
       {/* Login Button */}
       <button
         type="submit"
-        className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg transition-all duration-300"
+        disabled={loading}
+        className={`w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+          loading ? "opacity-70 cursor-not-allowed" : ""
+        }`}
       >
-        Login
+        {loading ? (
+          <>
+            <Loader2 className="animate-spin w-5 h-5" /> Logging in...
+          </>
+        ) : (
+          "Login"
+        )}
       </button>
     </form>
   );
