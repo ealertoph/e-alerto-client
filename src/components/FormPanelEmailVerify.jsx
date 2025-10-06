@@ -1,9 +1,9 @@
-// src/components/FormPanelEmailVerify.jsx
 import React, { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "axios";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { Loader2 } from "lucide-react"; // 👈 Spinner icon
 import { assets } from "../assets/assets";
 
 const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
@@ -15,6 +15,7 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
   const [otpExpired, setOtpExpired] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resetOtpTimerTrigger, setResetOtpTimerTrigger] = useState(0);
+  const [loading, setLoading] = useState(false); // 👈 NEW loading state
 
   // OTP countdown timer
   useEffect(() => {
@@ -22,7 +23,6 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
 
     setOtpTimer(15 * 60);
     setOtpExpired(false);
-    // start the cooldown immediately when the form is shown
     setResendCooldown(30);
 
     const interval = setInterval(() => {
@@ -89,13 +89,16 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
     e.preventDefault();
     setSubmitted(true);
     setErrors({});
+    setLoading(true); // 👈 show loading
 
     if (otpTimer === 0) {
+      setLoading(false);
       return toast.error("OTP has expired. Please resend a new one.");
     }
 
     const { errs, otp } = validateOtp();
     if (Object.keys(errs).length) {
+      setLoading(false);
       return setErrors(errs);
     }
 
@@ -113,6 +116,8 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
       }
     } catch (error) {
       toast.error("Error verifying OTP: " + error.message);
+    } finally {
+      setLoading(false); // 👈 hide loading after done
     }
   };
 
@@ -190,20 +195,30 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
               />
             ))}
         </div>
+
         {errors.otp && (
           <p className="mt-2 text-sm text-red-300 text-center">{errors.otp}</p>
         )}
+
+        {/* Verify Button */}
         <button
           type="submit"
-          disabled={otpExpired}
-          className={`w-full py-3 font-semibold rounded-lg shadow-lg transition-all duration-300 ${
-            otpExpired
+          disabled={otpExpired || loading}
+          className={`w-full py-3 font-semibold rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+            otpExpired || loading
               ? "bg-gray-600 cursor-not-allowed text-white"
               : "bg-blue-900 hover:bg-blue-800 text-white"
           }`}
         >
-          Verify Email
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin w-5 h-5" /> Verifying...
+            </>
+          ) : (
+            "Verify Email"
+          )}
         </button>
+
         {/* Resend OTP Button */}
         <button
           type="button"

@@ -5,7 +5,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
 import axios from "axios";
-import { Eye, EyeOff } from "lucide-react"; // add this at the top
+import { Eye, EyeOff } from "lucide-react";
 
 const FormPanelResetPassword = ({
   backendUrl,
@@ -32,16 +32,16 @@ const FormPanelResetPassword = ({
   const [otpTimer, setOtpTimer] = useState(3 * 60);
   const [otpError, setOtpError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
-  const inputRefs = useRef([]);
   const [resetOtpTimerTrigger, setResetOtpTimerTrigger] = useState(0);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const inputRefs = useRef([]);
 
   // OTP Countdown
   useEffect(() => {
     if (!isEmailSent || isOtpSubmitted) return;
 
-    setOtpTimer(3 * 60); // reset timer whenever resend
+    setOtpTimer(3 * 60);
     const interval = setInterval(() => {
       setOtpTimer((prev) => {
         if (prev <= 1) {
@@ -56,7 +56,7 @@ const FormPanelResetPassword = ({
     return () => clearInterval(interval);
   }, [isEmailSent, isOtpSubmitted, resetOtpTimerTrigger]);
 
-  // Resend cooldown countdown
+  // Resend cooldown timer
   useEffect(() => {
     let interval;
     if (resendCooldown > 0) {
@@ -72,32 +72,109 @@ const FormPanelResetPassword = ({
       seconds % 60
     ).padStart(2, "0")}`;
 
-  // Resend OTP at expiry or after cooldown
-  const onResendOtp = async () => {
-    if (resendCooldown > 0) return; // prevent spam
+  // Step 1: Send OTP
+  const onSubmitEmail = async (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setErrors({});
+    setOtpError("");
+
+    if (!email) return setErrors({ email: "Email is required." });
+    if (!/^\S+@\S+\.\S+$/.test(email))
+      return setErrors({ email: "Please enter a valid email address." });
+
+    if (
+      isLoggedIn &&
+      userData?.email &&
+      email.toLowerCase() !== userData.email.toLowerCase()
+    ) {
+      return setErrors({ email: "Email mismatch. Please try again." });
+    }
+
+    if (resendCooldown > 0) {
+      return toast.info(`Please wait ${resendCooldown}s before retrying.`);
+    }
+
     try {
       const { data } = await axios.post(
         `${backendUrl}/api/auth/send-reset-otp`,
         { email }
       );
+
+      if (data.success) {
+        toast.success("OTP sent successfully to your email.");
+        setOtpTimer(3 * 60);
+        setResendCooldown(30);
+        setOtpError("");
+        setIsEmailSent(true);
+        setIsOtpSubmitted(false);
+        inputRefs.current.forEach((input) => (input.value = ""));
+        inputRefs.current[0]?.focus();
+      } else {
+        toast.error(data.message || "Failed to send OTP.");
+      }
+    } catch (error) {
+      toast.error("Error sending OTP: " + error.message);
+    }
+  };
+
+  // Step 1.5: Resend OTP
+  const onResendOtp = async () => {
+    if (resendCooldown > 0)
+      return toast.info(`Please wait ${resendCooldown}s before resending.`);
+    if (!email) return toast.error("Please enter your email first.");
+
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/auth/send-reset-otp`,
+        { email }
+      );
+
       if (data.success) {
         toast.success("A new OTP has been sent to your email.");
         setOtpTimer(3 * 60);
-        setResendCooldown(30); // 30 seconds cooldown
+        setResendCooldown(30);
         inputRefs.current.forEach((input) => (input.value = ""));
         setOtpError("");
         setIsOtpSubmitted(false);
         inputRefs.current[0]?.focus();
-        setResetOtpTimerTrigger((prev) => prev + 1); // trigger OTP timer reset
-      } else toast.error(data.message);
+        setResetOtpTimerTrigger((prev) => prev + 1);
+      } else toast.error(data.message || "Failed to resend OTP.");
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Error resending OTP: " + error.message);
     }
   };
 
-  // OTP input handlers
+  // Step 2: Verify OTP
+  const onSubmitOTP = async (e) => {
+    e.preventDefault();
+    const otpArray = inputRefs.current.map((el) => el.value);
+    const enteredOtp = otpArray.join("");
+
+    if (enteredOtp.length !== 6 || otpArray.some((d) => !d)) {
+      return setOtpError("Please enter the 6-digit code.");
+    }
+
+    setOtpError("");
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/auth/verify-reset-otp`,
+        { email, otp: enteredOtp }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        onOtpVerified(enteredOtp);
+        setIsOtpSubmitted(true);
+      } else setOtpError(data.message);
+    } catch (error) {
+      setOtpError(error.message);
+    }
+  };
+
+  // OTP Input Handlers
   const handleInput = (e, index) => {
-    e.target.value = e.target.value.replace(/\D/, ""); // allow only digits
+    e.target.value = e.target.value.replace(/\D/, "");
     if (e.target.value && index < inputRefs.current.length - 1) {
       inputRefs.current[index + 1].focus();
     }
@@ -112,70 +189,6 @@ const FormPanelResetPassword = ({
     paste.forEach((char, index) => {
       if (inputRefs.current[index]) inputRefs.current[index].value = char;
     });
-  };
-
-  // Step 1: Send OTP
-  const onSubmitEmail = async (e) => {
-    e.preventDefault();
-    setSubmitted(true);
-
-    if (!email) return setErrors({ email: "Email is required." });
-    else if (!/^\S+@\S+\.\S+$/.test(email))
-      return setErrors({ email: "Please enter a valid email address." });
-
-    if (
-      isLoggedIn &&
-      userData?.email &&
-      email.toLowerCase() !== userData.email.toLowerCase()
-    ) {
-      return setErrors({ email: "Email mismatch. Please try again." });
-    }
-
-    try {
-      const { data } = await axios.post(
-        `${backendUrl}/api/auth/send-reset-otp`,
-        { email }
-      );
-      if (data.success) {
-        toast.success(data.message);
-        setOtpTimer(3 * 60);
-        setResendCooldown(30); // 30 seconds cooldown before resend
-        setOtpError("");
-        setIsEmailSent(true);
-        inputRefs.current[0]?.focus();
-      } else toast.error(data.message);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
-
-  // Step 2: Verify OTP
-  const onSubmitOTP = async (e) => {
-    e.preventDefault();
-    const otpArray = inputRefs.current.map((el) => el.value);
-    const enteredOtp = otpArray.join("");
-
-    if (enteredOtp.length !== 6 || otpArray.some((d) => !d)) {
-      return setOtpError("Please enter the 6-digit code.");
-    }
-    setOtpError("");
-
-    try {
-      const { data } = await axios.post(
-        `${backendUrl}/api/auth/verify-reset-otp`,
-        {
-          email,
-          otp: enteredOtp,
-        }
-      );
-      if (data.success) {
-        toast.success(data.message);
-        onOtpVerified(enteredOtp);
-        setIsOtpSubmitted(true);
-      } else setOtpError(data.message);
-    } catch (error) {
-      setOtpError(error.message);
-    }
   };
 
   return (
@@ -280,7 +293,6 @@ const FormPanelResetPassword = ({
           >
             Submit OTP
           </button>
-          {/* Resend OTP Button */}
           <button
             type="button"
             onClick={onResendOtp}
@@ -317,7 +329,7 @@ const FormPanelResetPassword = ({
             </ul>
           </div>
 
-          {/* New Password Field */}
+          {/* New Password */}
           <div>
             <div className="relative">
               <input
@@ -340,7 +352,7 @@ const FormPanelResetPassword = ({
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-white select-none focus:outline-none"
+                className="absolute inset-y-0 right-3 flex items-center text-white focus:outline-none"
               >
                 {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -350,7 +362,7 @@ const FormPanelResetPassword = ({
             )}
           </div>
 
-          {/* Confirm Password Field */}
+          {/* Confirm Password */}
           <div>
             <div className="relative">
               <input
@@ -376,7 +388,7 @@ const FormPanelResetPassword = ({
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-white select-none focus:outline-none"
+                className="absolute inset-y-0 right-3 flex items-center text-white focus:outline-none"
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
