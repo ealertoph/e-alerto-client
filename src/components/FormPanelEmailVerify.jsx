@@ -11,7 +11,7 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
   const inputRefs = useRef([]);
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const [otpTimer, setOtpTimer] = useState(15 * 60);
+  const [otpTimer, setOtpTimer] = useState(3 * 60);
   const [otpExpired, setOtpExpired] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resetOtpTimerTrigger, setResetOtpTimerTrigger] = useState(0);
@@ -21,7 +21,7 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
   useEffect(() => {
     if (!userData) return;
 
-    setOtpTimer(15 * 60);
+    setOtpTimer(3 * 60);
     setOtpExpired(false);
     setResendCooldown(30);
 
@@ -131,7 +131,7 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
       );
       if (data.success) {
         toast.success("OTP sent to your email");
-        setOtpTimer(15 * 60);
+        setOtpTimer(3 * 60);
         setOtpExpired(false);
         inputRefs.current.forEach((input) => (input.value = ""));
         setErrors({});

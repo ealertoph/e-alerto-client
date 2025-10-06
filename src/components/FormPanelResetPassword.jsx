@@ -37,6 +37,12 @@ const FormPanelResetPassword = ({
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const inputRefs = useRef([]);
 
+  // Loading states
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isResendingOtp, setIsResendingOtp] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
   // OTP Countdown
   useEffect(() => {
     if (!isEmailSent || isOtpSubmitted) return;
@@ -96,6 +102,7 @@ const FormPanelResetPassword = ({
     }
 
     try {
+      setIsSendingOtp(true);
       const { data } = await axios.post(
         `${backendUrl}/api/auth/send-reset-otp`,
         { email }
@@ -115,6 +122,8 @@ const FormPanelResetPassword = ({
       }
     } catch (error) {
       toast.error("Error sending OTP: " + error.message);
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
@@ -125,6 +134,7 @@ const FormPanelResetPassword = ({
     if (!email) return toast.error("Please enter your email first.");
 
     try {
+      setIsResendingOtp(true);
       const { data } = await axios.post(
         `${backendUrl}/api/auth/send-reset-otp`,
         { email }
@@ -142,6 +152,8 @@ const FormPanelResetPassword = ({
       } else toast.error(data.message || "Failed to resend OTP.");
     } catch (error) {
       toast.error("Error resending OTP: " + error.message);
+    } finally {
+      setIsResendingOtp(false);
     }
   };
 
@@ -157,9 +169,13 @@ const FormPanelResetPassword = ({
 
     setOtpError("");
     try {
+      setIsVerifyingOtp(true);
       const { data } = await axios.post(
         `${backendUrl}/api/auth/verify-reset-otp`,
-        { email, otp: enteredOtp }
+        {
+          email,
+          otp: enteredOtp,
+        }
       );
 
       if (data.success) {
@@ -169,7 +185,17 @@ const FormPanelResetPassword = ({
       } else setOtpError(data.message);
     } catch (error) {
       setOtpError(error.message);
+    } finally {
+      setIsVerifyingOtp(false);
     }
+  };
+
+  // Step 3: Submit New Password
+  const handleSubmitNewPassword = async (e) => {
+    e.preventDefault();
+    setIsUpdatingPassword(true);
+    await onSubmitNewPassword(e);
+    setIsUpdatingPassword(false);
   };
 
   // OTP Input Handlers
@@ -239,9 +265,13 @@ const FormPanelResetPassword = ({
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg transition-all duration-300"
+            disabled={isSendingOtp}
+            className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 flex justify-center items-center gap-2"
           >
-            Send OTP
+            {isSendingOtp && (
+              <span className="loader border-white border-t-transparent border-2 rounded-full w-4 h-4 animate-spin"></span>
+            )}
+            {isSendingOtp ? "Sending..." : "Send OTP"}
           </button>
         </form>
       )}
@@ -282,39 +312,39 @@ const FormPanelResetPassword = ({
           {otpError && (
             <p className="mt-2 text-sm text-red-300 text-center">{otpError}</p>
           )}
+
           <button
             type="submit"
-            disabled={otpTimer === 0}
-            className={`w-full py-3 font-semibold rounded-lg shadow-lg transition-all duration-300 ${
-              otpTimer === 0
-                ? "bg-gray-600 cursor-not-allowed text-white"
-                : "bg-blue-900 hover:bg-blue-800 text-white"
-            }`}
+            disabled={otpTimer === 0 || isVerifyingOtp}
+            className="w-full py-3 font-semibold rounded-lg shadow-lg transition-all duration-300 flex justify-center items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white"
           >
-            Submit OTP
+            {isVerifyingOtp && (
+              <span className="loader border-white border-t-transparent border-2 rounded-full w-4 h-4 animate-spin"></span>
+            )}
+            {isVerifyingOtp ? "Verifying..." : "Submit OTP"}
           </button>
+
           <button
             type="button"
             onClick={onResendOtp}
-            disabled={resendCooldown > 0}
-            className={`w-full py-2 rounded-lg transition-all duration-300 ${
-              otpTimer === 0
-                ? "bg-blue-900 hover:bg-blue-800 text-white"
-                : resendCooldown > 0
-                  ? "bg-gray-600 text-white"
-                  : "bg-gray-700 hover:bg-gray-600 text-white"
-            }`}
+            disabled={resendCooldown > 0 || isResendingOtp}
+            className="w-full py-2 rounded-lg transition-all duration-300 flex justify-center items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white"
           >
-            {resendCooldown > 0
-              ? `Resend OTP in ${resendCooldown}s`
-              : "Resend OTP"}
+            {isResendingOtp && (
+              <span className="loader border-white border-t-transparent border-2 rounded-full w-4 h-4 animate-spin"></span>
+            )}
+            {isResendingOtp
+              ? "Resending..."
+              : resendCooldown > 0
+                ? `Resend OTP in ${resendCooldown}s`
+                : "Resend OTP"}
           </button>
         </form>
       )}
 
       {/* STEP 3: NEW PASSWORD */}
       {isEmailSent && isOtpSubmitted && (
-        <form onSubmit={onSubmitNewPassword} className="space-y-6">
+        <form onSubmit={handleSubmitNewPassword} className="space-y-6">
           <h2 className="text-2xl font-bold text-center text-white mb-2">
             Create New Password
           </h2>
@@ -402,9 +432,13 @@ const FormPanelResetPassword = ({
 
           <button
             type="submit"
-            className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg transition-all duration-300"
+            disabled={isUpdatingPassword}
+            className="w-full py-3 bg-blue-900 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 flex justify-center items-center gap-2"
           >
-            Update Password
+            {isUpdatingPassword && (
+              <span className="loader border-white border-t-transparent border-2 rounded-full w-4 h-4 animate-spin"></span>
+            )}
+            {isUpdatingPassword ? "Updating..." : "Update Password"}
           </button>
         </form>
       )}
