@@ -316,19 +316,28 @@ const FormPanelResetPassword = ({
           <button
             type="submit"
             disabled={otpTimer === 0 || isVerifyingOtp}
-            className="w-full py-3 font-semibold rounded-lg shadow-lg transition-all duration-300 flex justify-center items-center gap-2 bg-blue-900 hover:bg-blue-800 text-white"
+            className={`w-full py-3 font-semibold rounded-lg shadow-lg transition-all duration-300 flex justify-center items-center gap-2
+              ${
+                otpTimer === 0
+                  ? "bg-gray-600 text-gray-300 cursor-not-allowed"
+                  : "bg-blue-900 hover:bg-blue-800 text-white"
+              }`}
           >
             {isVerifyingOtp && (
               <span className="loader border-white border-t-transparent border-2 rounded-full w-4 h-4 animate-spin"></span>
             )}
             {isVerifyingOtp ? "Verifying..." : "Submit OTP"}
           </button>
-
           <button
             type="button"
             onClick={onResendOtp}
             disabled={resendCooldown > 0 || isResendingOtp}
-            className="w-full py-2 rounded-lg transition-all duration-300 flex justify-center items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white"
+            className={`w-full py-2 rounded-lg transition-all duration-300 flex justify-center items-center gap-2
+              ${
+                resendCooldown > 0
+                  ? "bg-gray-700 text-gray-300 cursor-not-allowed"
+                  : "bg-blue-900 hover:bg-blue-800 text-white"
+              }`}
           >
             {isResendingOtp && (
               <span className="loader border-white border-t-transparent border-2 rounded-full w-4 h-4 animate-spin"></span>
