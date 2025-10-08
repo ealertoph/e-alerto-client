@@ -51,7 +51,7 @@ export default function FeedbackTable() {
         setRows(
           data.feedbacks.map((f) => ({
             id: f._id,
-            reportId: f.report_ID,
+            reportId: f.reportId,
             overall: f.overall,
             service: f.service,
             speed: f.speed,
