@@ -17,6 +17,14 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
   const [resetOtpTimerTrigger, setResetOtpTimerTrigger] = useState(0);
   const [loading, setLoading] = useState(false); // 👈 NEW loading state
 
+  // ✅ Auto-send OTP when component mounts (first load)
+  useEffect(() => {
+    if (userData && !userData.isAccountVerified) {
+      sendOtp();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // OTP countdown timer
   useEffect(() => {
     if (!userData) return;
