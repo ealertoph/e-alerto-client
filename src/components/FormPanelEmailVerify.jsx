@@ -105,7 +105,7 @@ const FormPanelEmailVerify = ({ backendUrl, userData, getUserData }) => {
     try {
       const { data } = await axios.post(
         `${backendUrl}/api/auth/verify-account`,
-        { otp }
+        { userId: userData._id, otp }
       );
       if (data.success) {
         toast.success(data.message);
