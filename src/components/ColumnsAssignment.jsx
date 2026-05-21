@@ -82,7 +82,7 @@ export const AssignmentColumns = ({
                 {opt}
               </MenuItem>
             );
-          }
+          },
         )}
       </TextField>
     ),
@@ -91,6 +91,8 @@ export const AssignmentColumns = ({
     field: "assignedTo",
     headerName: "Assigned To",
     flex: 1,
+    valueGetter: (value, row) =>
+      employees.find((u) => u.id === row.assignedTo)?.fullName || "",
     renderCell: ({ row }) => (
       <TextField
         disabled={
@@ -139,7 +141,7 @@ export const AssignmentColumns = ({
             label: u.fullName,
           })),
         ].map((opt) => {
-          const disabled = row.assignedTo && opt.value === ""; // disable Unassigned if already assigned
+          const disabled = row.assignedTo && opt.value === "";
 
           return (
             <MenuItem key={opt.value} value={opt.value} disabled={disabled}>

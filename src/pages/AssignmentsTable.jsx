@@ -11,7 +11,11 @@ import {
   CircularProgress,
   IconButton,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { 
+  DataGrid,
+  useGridApiRef,
+  gridFilteredSortedRowIdsSelector,  
+} from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { AppContent } from "../context/AppContext";
@@ -32,6 +36,15 @@ export default function AssignmentsTable() {
     page: 0,
   });
   const { userData } = useContext(AppContent);
+  //Get Prepared By Name Conent in PDF Report, ExportCsvAssignments.
+  const preparedBy = [
+    userData?.firstName,
+    userData?.middleName,
+    userData?.surname,
+    userData?.suffix,
+  ]
+    .filter((p) => p && String(p).trim())
+    .join(" ");
   const currentUserId = userData?.id || userData?._id;
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
@@ -50,6 +63,15 @@ export default function AssignmentsTable() {
   const archivedRows = rows.filter((r) => r.archive);
   const [selectedRow, setSelectedRow] = useState(null);
   const [remarks, setRemarks] = useState("");
+  const apiRef = useGridApiRef();
+
+  const getRowsToExport = () => {
+    const ids = gridFilteredSortedRowIdsSelector(apiRef);
+
+    return ids
+      .map((id) => apiRef.current.getRow(id))
+      .filter(Boolean);
+  };
 
   // fetch initial data
   const fetchData = async () => {
@@ -76,7 +98,7 @@ export default function AssignmentsTable() {
         const filtered = uData.users.filter(
           (u) =>
             u.position?.toLowerCase().includes("district engineer") &&
-            u.role?.toLowerCase() !== "admin"
+            u.role?.toLowerCase() !== "admin",
         );
         setEmployees(filtered);
       }
@@ -105,7 +127,7 @@ export default function AssignmentsTable() {
               archive: a.archive || false,
               remarks: a.remarks || "",
             };
-          })
+          }),
         );
       }
     } catch (err) {
@@ -139,7 +161,7 @@ export default function AssignmentsTable() {
   const deleteAssignment = async (id) => {
     const res = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/assignments/delete/${id}`,
-      { method: "DELETE", credentials: "include" }
+      { method: "DELETE", credentials: "include" },
     );
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
@@ -148,7 +170,7 @@ export default function AssignmentsTable() {
   const unarchiveAssignment = async (assignmentId) => {
     const res = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/assignments/unarchive/${assignmentId}`,
-      { method: "PUT", credentials: "include" }
+      { method: "PUT", credentials: "include" },
     );
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
@@ -158,7 +180,7 @@ export default function AssignmentsTable() {
   const uploadReport = async (assignmentId, form) => {
     const res = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/assignments/upload-report/${assignmentId}`,
-      { method: "POST", credentials: "include", body: form }
+      { method: "POST", credentials: "include", body: form },
     );
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
@@ -271,7 +293,7 @@ export default function AssignmentsTable() {
                   archive: true, // ✅ archive it
                   remarks: assignment.remarks,
                 }
-              : r
+              : r,
           );
           return updatedRows;
         });
@@ -307,8 +329,8 @@ export default function AssignmentsTable() {
                       siteInspectionReport: "",
                       accomplishmentDate: "",
                     }
-                  : r
-              )
+                  : r,
+              ),
             );
           })
           .catch((e) => {
@@ -334,7 +356,8 @@ export default function AssignmentsTable() {
     })
       .then((assignment) => {
         toast.success(
-          "Assigned to " + employees.find((u) => u.id === dialogEmpId)?.fullName
+          "Assigned to " +
+            employees.find((u) => u.id === dialogEmpId)?.fullName,
         );
         setRows((prev) =>
           prev.map((r) =>
@@ -346,8 +369,8 @@ export default function AssignmentsTable() {
                   assignmentNumber: assignment.assignmentNumber,
                   timestamp: assignment.createdAt || new Date().toISOString(),
                 }
-              : r
-          )
+              : r,
+          ),
         );
       })
       .catch((e) => {
@@ -371,10 +394,27 @@ export default function AssignmentsTable() {
   });
 
   const filteredRows = (tab === "active" ? activeRows : archivedRows).filter(
-    (r) =>
-      Object.values(r).some((val) =>
-        String(val).toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    (r) => {
+      const assignedToName =
+        employees.find((u) => u.id === r.assignedTo)?.fullName || "";
+
+      return [
+        r.reportNumber,
+        r.status,
+        assignedToName,
+        r.assignmentNumber,
+        r.timestamp ? new Date(r.timestamp).toLocaleString() : "",
+        r.originalFileName || r.siteInspectionReport || "",
+        r.accomplishmentDate
+          ? new Date(r.accomplishmentDate).toLocaleString()
+          : "",
+        r.remarks,
+      ].some((val) =>
+        String(val || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()),
+      );
+    },
   );
 
   return (
@@ -418,9 +458,10 @@ export default function AssignmentsTable() {
             {tab === "archive" ? "Show Active" : "Show Completed"}
           </Button>
           <ExportCsvAssignments
-            rows={rows}
+            rows={filteredRows}
+            getRowsToExport={getRowsToExport}
             employees={employees}
-            searchQuery={searchQuery}
+            preparedBy={preparedBy}
           />
         </Box>
       </Stack>
@@ -434,6 +475,7 @@ export default function AssignmentsTable() {
             {/* adjust minWidth to sum of your column widths or experiment */}
             <Box sx={{ minWidth: 800 }}>
               <DataGrid
+                apiRef={apiRef} 
                 autoHeight
                 rows={filteredRows}
                 columns={columns}

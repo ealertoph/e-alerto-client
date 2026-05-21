@@ -1,5 +1,6 @@
 // src/pages/RegUserTable.jsx
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { AppContent } from "../context/AppContext";
 import {
   Box,
   TextField,
@@ -11,7 +12,11 @@ import {
 } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SearchIcon from "@mui/icons-material/Search";
-import { DataGrid } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  useGridApiRef,
+  gridFilteredSortedRowIdsSelector,
+} from "@mui/x-data-grid";
 import ExportCsvRegUser from "../components/ExportCsvRegUser";
 import RegUserColumns from "../components/ColumnsRegUser";
 
@@ -24,6 +29,28 @@ function RegUserTable() {
     page: 0,
   });
 
+  //export file logic
+  const { userData } = useContext(AppContent);
+  const apiRef = useGridApiRef();
+
+  const preparedBy = [
+    userData?.firstName,
+    userData?.middleName,
+    userData?.surname,
+    userData?.suffix,
+  ]
+    .filter((p) => p && String(p).trim())
+    .join(" ");
+
+  const getRowsToExport = () => {
+    const ids = gridFilteredSortedRowIdsSelector(apiRef);
+
+    return ids
+      .map((id) => apiRef.current.getRow(id))
+      .filter(Boolean);
+  };
+
+  //retrieve mobile app users from database
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -104,7 +131,11 @@ function RegUserTable() {
 
         {/* Export button on the right */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <ExportCsvRegUser rows={rows} />
+          <ExportCsvRegUser
+            rows={filteredRows}
+            getRowsToExport={getRowsToExport}
+            preparedBy={preparedBy}
+          />
         </Box>
       </Stack>
 
@@ -112,6 +143,7 @@ function RegUserTable() {
         {/* adjust minWidth as needed to fit all your columns */}
         <Box sx={{ minWidth: 600 }}>
           <DataGrid
+            apiRef={apiRef}
             rows={filteredRows}
             columns={columns}
             loading={loading}

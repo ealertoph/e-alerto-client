@@ -18,7 +18,11 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  useGridApiRef,
+  gridFilteredSortedRowIdsSelector,
+} from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import DupaBreakdown from "../components/DupaBreakdown";
@@ -47,8 +51,27 @@ export default function ReportsTable() {
     page: 0,
   });
   const [tab, setTab] = useState("active"); // "active" or "archive"
-
   const { userData } = useContext(AppContent); // Access user data from the context
+
+  // PDF Formatting
+  const apiRef = useGridApiRef();
+
+  const preparedBy = [
+    userData?.firstName,
+    userData?.middleName,
+    userData?.surname,
+    userData?.suffix,
+  ]
+    .filter((p) => p && String(p).trim())
+    .join(" ");
+
+  const getRowsToExport = () => {
+    const ids = gridFilteredSortedRowIdsSelector(apiRef);
+
+    return ids
+      .map((id) => apiRef.current.getRow(id))
+      .filter(Boolean);
+  };
 
   // Check if the user is a District Engineer
   const isEngineer = userData?.position
@@ -207,7 +230,11 @@ export default function ReportsTable() {
           >
             {tab === "archive" ? "Show Active" : "Show Completed"}
           </Button>
-          <ExportCsvReports rows={rows} />
+          <ExportCsvReports
+            rows={filtered}
+            getRowsToExport={getRowsToExport}
+            preparedBy={preparedBy}
+          />
         </Box>
       </Stack>
 
@@ -220,6 +247,7 @@ export default function ReportsTable() {
           <Box sx={{ width: "100%", overflowX: "auto" }}>
             <Box sx={{ minWidth: 1000 }}>
               <DataGrid
+                apiRef={apiRef}
                 rows={filtered}
                 columns={columns}
                 paginationModel={paginationModel}

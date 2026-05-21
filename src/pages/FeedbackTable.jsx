@@ -1,5 +1,6 @@
 // src/pages/FeedbackTable.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { AppContent } from "../context/AppContext";
 import {
   Box,
   Typography,
@@ -18,11 +19,16 @@ import {
   useTheme,
   Rating,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  useGridApiRef,
+  gridFilteredSortedRowIdsSelector,
+} from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ExportCsvFeedback from "../components/ExportCsvFeedback";
 import FeedbackColumns from "../components/ColumnsFeedback";
+
 
 export default function FeedbackTable() {
   const theme = useTheme();
@@ -37,6 +43,29 @@ export default function FeedbackTable() {
   // detail dialog state
   const [detailOpen, setDetailOpen] = useState(false);
   const [current, setCurrent] = useState(null);
+
+  //export formatting and logic
+  const apiRef = useGridApiRef();
+
+  const getRowsToExport = () => {
+    const ids = gridFilteredSortedRowIdsSelector(apiRef);
+
+    return ids
+      .map((id) => apiRef.current.getRow(id))
+      .filter(Boolean);
+  };
+
+  // get the employee account the generated and exported the report
+  const { userData } = useContext(AppContent);
+
+  const preparedBy = [
+    userData?.firstName,
+    userData?.middleName,
+    userData?.surname,
+    userData?.suffix,
+  ]
+    .filter((p) => p && String(p).trim())
+    .join(" ");
 
   // fetch all feedback
   const fetchFeedback = async () => {
@@ -127,7 +156,12 @@ export default function FeedbackTable() {
         </Box>
 
         {/* export CSV */}
-        <ExportCsvFeedback rows={rows} disabled={loading} />
+        <ExportCsvFeedback
+          rows={filtered}
+          getRowsToExport={getRowsToExport}
+          disabled={loading}
+          preparedBy={preparedBy}
+        />
       </Stack>
 
       <Paper>
@@ -140,6 +174,7 @@ export default function FeedbackTable() {
             {/* tweak 600px up/down to fit all your columns comfortably */}
             <Box sx={{ minWidth: 600 }}>
               <DataGrid
+                apiRef={apiRef}
                 autoHeight
                 rows={filtered}
                 columns={columns}

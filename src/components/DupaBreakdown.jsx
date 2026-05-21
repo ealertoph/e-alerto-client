@@ -164,6 +164,16 @@ export default function DupaBreakdown({
     { title: "Materials", rows: materialRows, subtotal: materialTotal },
   ];
 
+  // export file prepared by logic
+  const preparedBy = [
+    userData?.firstName,
+    userData?.middleName,
+    userData?.surname,
+    userData?.suffix,
+  ]
+    .filter((p) => p && String(p).trim())
+    .join(" ");
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <Card>
@@ -259,6 +269,7 @@ export default function DupaBreakdown({
               reportId={reportId}
               classification={classification}
               measurement={area.toFixed(2)}
+              preparedBy={preparedBy}
               breakdown={{
                 estTime,
                 labourRows,

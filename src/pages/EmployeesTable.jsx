@@ -16,7 +16,11 @@ import {
   CircularProgress,
   useTheme,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  useGridApiRef,
+  gridFilteredSortedRowIdsSelector,
+} from "@mui/x-data-grid";
 import { toast } from "react-toastify";
 import SearchIcon from "@mui/icons-material/Search";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -31,6 +35,26 @@ export default function EmployeesTable() {
 
   // Access logged-in user data from context
   const { userData } = useContext(AppContent);
+
+  // export report logic
+  const apiRef = useGridApiRef();
+
+  const preparedBy = [
+    userData?.firstName,
+    userData?.middleName,
+    userData?.surname,
+    userData?.suffix,
+  ]
+    .filter((p) => p && String(p).trim())
+    .join(" ");
+
+  const getRowsToExport = () => {
+    const ids = gridFilteredSortedRowIdsSelector(apiRef);
+
+    return ids
+      .map((id) => apiRef.current.getRow(id))
+      .filter(Boolean);
+  };
 
   // table & dialog state
   const [rows, setRows] = React.useState([]);
@@ -182,7 +206,12 @@ export default function EmployeesTable() {
           >
             {showArchived ? "Show Active" : "Show Archived"}
           </Button>
-          <ExportCsvEmployees rows={rows} disabled={loading} />
+          <ExportCsvEmployees
+            rows={filtered}
+            getRowsToExport={getRowsToExport}
+            disabled={loading}
+            preparedBy={preparedBy}
+          />
           <Button
             variant="contained"
             startIcon={<AddIcon />}
@@ -206,6 +235,7 @@ export default function EmployeesTable() {
           <Box sx={{ width: "100%", overflowX: "auto" }}>
             <Box sx={{ minWidth: 1000 }}>
               <DataGrid
+                apiRef={apiRef}
                 autoHeight
                 rows={filtered}
                 columns={columns}
@@ -214,8 +244,7 @@ export default function EmployeesTable() {
                 pageSizeOptions={[10, 25, 50, 100]}
                 pagination
                 onCellClick={(params) => {
-                  if (params.field === "status" || params.field === "actions")
-                    return;
+                  if (params.field === "status" || params.field === "actions") return;
                   if (isRowDisabled(params.row)) return;
                   handleRowClick(params);
                 }}
@@ -226,14 +255,12 @@ export default function EmployeesTable() {
                   "& .MuiDataGrid-row:hover": {
                     backgroundColor: theme.palette.action.selected,
                   },
-                  // Visually disable the super admin row (optional, but good UX)
                   "& .super-admin-row": {
                     opacity: 0.6,
                     pointerEvents: "none",
                     backgroundColor: theme.palette.action.disabledBackground,
                   },
                 }}
-                // Add a getRowClassName prop to apply a class to the super admin row
                 getRowClassName={(params) =>
                   isRowDisabled(params.row) ? "super-admin-row" : ""
                 }
