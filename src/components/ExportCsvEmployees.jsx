@@ -167,7 +167,7 @@ export default function ExportCsvEmployees({
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(11);
-        doc.text("EMPLOYEES REPORT", pageWidth / 2, 36, {
+        doc.text("LIST OF EMPLOYEES", pageWidth / 2, 36, {
           align: "center",
         });
 

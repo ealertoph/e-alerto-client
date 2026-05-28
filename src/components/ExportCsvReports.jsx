@@ -170,7 +170,7 @@ export default function ExportCsvReports({
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(11);
-        doc.text("REPORTS REPORT", pageWidth / 2, 36, {
+        doc.text("LIST OF SUBMITTED ROAD DAMAGE REPORTS", pageWidth / 2, 36, {
           align: "center",
         });
 

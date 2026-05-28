@@ -151,7 +151,7 @@ export default function ExportCsvRegUser({
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(11);
-        doc.text("QCITIZEN MOBILE APP USERS REPORT", pageWidth / 2, 36, {
+        doc.text("LIST OF QCITIZEN MOBILE APP USERS", pageWidth / 2, 36, {
           align: "center",
         });
 

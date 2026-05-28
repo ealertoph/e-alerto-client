@@ -194,7 +194,7 @@ export default function ExportCsvAssignments({
 
         doc.setFont("helvetica", "bold");
         doc.setFontSize(11);
-        doc.text("ASSIGNMENTS REPORT", pageWidth / 2, 36, {
+        doc.text("LIST OF JOB ORDERS", pageWidth / 2, 36, {
           align: "center",
         });
 
@@ -218,7 +218,7 @@ export default function ExportCsvAssignments({
       },
     });
 
-    doc.save("assignments-report.pdf");
+    doc.save("list-of-job-order-report.pdf");
   };
 
   return (
